@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 func AddToChecker(path string) ([]byte, error) {
@@ -17,7 +18,24 @@ func AddToChecker(path string) ([]byte, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%s", out)
+
+	st := string(out)
+
+	if strings.Contains(st, "Your branch is up to date with") {
+		fmt.Println("\t\t* Local changes updated with remotes")
+	}
+	if strings.Contains(st, "Changes not staged for commit") {
+		fmt.Println("\t\t* Has changes not staged for commit")
+	}
+	if strings.Contains(st, "Untracked files:") {
+		fmt.Println("\t\t* Has untracked files")
+	}
+	// FIXME OLD
+	/*
+		else {
+			fmt.Printf("%s", out)
+		}
+	*/
 
 	return out, err
 }
