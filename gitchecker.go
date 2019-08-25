@@ -24,6 +24,9 @@ func AddToChecker(path string) ([]byte, error) {
 	if strings.Contains(st, "Your branch is up to date with") {
 		fmt.Println("\t\t* Local changes updated with remotes")
 	}
+	if strings.Contains(st, "Your branch is ahead of") {
+		fmt.Println("\t\t* Unpushed commits")
+	}
 	if strings.Contains(st, "Changes not staged for commit") {
 		fmt.Println("\t\t* Has changes not staged for commit")
 	}
