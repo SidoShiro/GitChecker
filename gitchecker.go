@@ -7,10 +7,28 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
-func AddToChecker(path string) ([]byte, error) {
+type summary struct {
+	countGits      int
+	countUpdated   int
+	countUnpushed  int
+	countChanges   int
+	countUntracked int
+}
+
+func Summary(cSum *summary) {
+
+	fmt.Println("Summary: (over the " + strconv.Itoa(cSum.countGits) + " repositories)")
+	fmt.Println("\tUpdated " + strconv.Itoa(cSum.countUpdated) + "/" + strconv.Itoa(cSum.countGits))
+	fmt.Println("\tUnPushed " + strconv.Itoa(cSum.countUnpushed) + "/" + strconv.Itoa(cSum.countGits))
+	fmt.Println("\tChanges not committed " + strconv.Itoa(cSum.countChanges) + "/" + strconv.Itoa(cSum.countGits))
+	fmt.Println("\tUntracked files " + strconv.Itoa(cSum.countUntracked) + "/" + strconv.Itoa(cSum.countGits))
+}
+
+func AddToChecker(path string, cSum *summary) {
 	cmdGit := exec.Command("git", "status")
 	cmdGit.Dir = path
 	out, err := cmdGit.Output()
@@ -19,28 +37,27 @@ func AddToChecker(path string) ([]byte, error) {
 		log.Fatal(err)
 	}
 
+	cSum.countGits++
+
 	st := string(out)
 
 	if strings.Contains(st, "Your branch is up to date with") {
 		fmt.Println("\t\t* Local changes updated with remotes")
+		cSum.countUpdated++
 	}
 	if strings.Contains(st, "Your branch is ahead of") {
 		fmt.Println("\t\t* Unpushed commits")
+		cSum.countUnpushed++
 	}
 	if strings.Contains(st, "Changes not staged for commit") {
 		fmt.Println("\t\t* Has changes not staged for commit")
+		cSum.countChanges++
 	}
 	if strings.Contains(st, "Untracked files:") {
 		fmt.Println("\t\t* Has untracked files")
+		cSum.countUntracked++
 	}
-	// FIXME OLD
-	/*
-		else {
-			fmt.Printf("%s", out)
-		}
-	*/
 
-	return out, err
 }
 
 func GetDirWalk(root string) ([]string, error) {
@@ -74,6 +91,7 @@ func main() {
 
 	var files []string
 	var err error
+	var cSum summary
 
 	files, err = GetDirWalk(root)
 
@@ -83,6 +101,7 @@ func main() {
 
 	for _, file := range files {
 		fmt.Println("At : " + file)
-		_, _ = AddToChecker(file)
+		AddToChecker(file, &cSum)
 	}
+	Summary(&cSum)
 }
