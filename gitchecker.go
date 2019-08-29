@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/gookit/color"
 	"io/ioutil"
 	"log"
 	"os"
@@ -40,21 +41,20 @@ func AddToChecker(path string, cSum *summary) {
 	cSum.countGits++
 
 	st := string(out)
-
 	if strings.Contains(st, "Your branch is up to date with") {
-		fmt.Println("\t\t* Local changes updated with remotes")
+		color.New(color.FgWhite).Println("\t\t* Local changes updated with remotes")
 		cSum.countUpdated++
 	}
 	if strings.Contains(st, "Your branch is ahead of") {
-		fmt.Println("\t\t* Unpushed commits")
+		color.New(color.FgCyan).Println("\t\t* Unpushed commits")
 		cSum.countUnpushed++
 	}
 	if strings.Contains(st, "Changes not staged for commit") {
-		fmt.Println("\t\t* Has changes not staged for commit")
+		color.New(color.FgRed).Println("\t\t* Has changes not staged for commit")
 		cSum.countChanges++
 	}
 	if strings.Contains(st, "Untracked files:") {
-		fmt.Println("\t\t* Has untracked files")
+		color.New(color.FgYellow).Println("\t\t* Has untracked files")
 		cSum.countUntracked++
 	}
 
