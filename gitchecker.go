@@ -82,7 +82,9 @@ func GetDirWalk(root string) ([]string, error) {
 }
 
 func main() {
-	root := "/home/sido/Projects/"
+	// root := "/home/sido/Projects/"
+	root := "." // Current directory by default
+
 	if len(os.Args) == 2 {
 		root = string(os.Args[1])
 	}
