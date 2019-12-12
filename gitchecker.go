@@ -22,15 +22,14 @@ type summary struct {
 
 func Summary(cSum *summary) {
 
-	fmt.Println("Summary: (over the " + strconv.Itoa(cSum.countGits) + " repositories)")
+	shell_color.BluePrintln("Summary: (over the " + strconv.Itoa(cSum.countGits) + " repositories)")
 	shell_color.GreenPrintln("\tUpdated " + strconv.Itoa(cSum.countUpdated) + "/" + strconv.Itoa(cSum.countGits))
 	shell_color.CyanPrintln("\tUnPushed " + strconv.Itoa(cSum.countUnpushed) + "/" + strconv.Itoa(cSum.countGits))
 	shell_color.RedPrintln("\tChanges not committed " + strconv.Itoa(cSum.countChanges) + "/" + strconv.Itoa(cSum.countGits))
 	shell_color.YellowPrintln("\tUntracked files " + strconv.Itoa(cSum.countUntracked) + "/" + strconv.Itoa(cSum.countGits))
-	shell_color.BluePrintln("\t\t\t\tusing Colors!")
 }
 
-func AddToChecker(path string, cSum *summary) {
+func AddToChecker(path string, cSum *summary, optionVerbose bool) {
 	cmdGit := exec.Command("git", "status")
 	cmdGit.Dir = path
 	out, err := cmdGit.Output()
@@ -43,22 +42,30 @@ func AddToChecker(path string, cSum *summary) {
 
 	st := string(out)
 	if strings.Contains(st, "Your branch is up to date with") {
-		shell_color.GreenPrintln("\t\t* Local changes updated with remotes")
+		if optionVerbose {
+			shell_color.GreenPrintln("\t\t* Local changes updated with remotes")
+		}
 		// color.New(color.FgWhite).Println("\t\t* Local changes updated with remotes")
 		cSum.countUpdated++
 	}
 	if strings.Contains(st, "Your branch is ahead of") {
-		shell_color.CyanPrintln("\t\t* Unpushed commits")
+		if optionVerbose {
+			shell_color.CyanPrintln("\t\t* Unpushed commits")
+		}
 		// color.New(color.FgCyan).Println("\t\t* Unpushed commits")
 		cSum.countUnpushed++
 	}
 	if strings.Contains(st, "Changes not staged for commit") {
-		shell_color.RedPrintln("\t\t* Has changes not staged for commit")
+		if optionVerbose {
+			shell_color.RedPrintln("\t\t* Has changes not staged for commit")
+		}
 		// color.New(color.FgRed).Println("\t\t* Has changes not staged for commit")
 		cSum.countChanges++
 	}
 	if strings.Contains(st, "Untracked files:") {
-		shell_color.YellowPrintln("\t\t* Has untracked files")
+		if optionVerbose {
+			shell_color.YellowPrintln("\t\t* Has untracked files")
+		}
 		// color.New(color.FgYellow).Println("\t\t* Has untracked files")
 		cSum.countUntracked++
 	}
@@ -89,9 +96,18 @@ func GetDirWalk(root string) ([]string, error) {
 func main() {
 	// root := "/home/sido/Projects/"
 	root := "." // Current directory by default
+	verbose := ""
+	optionVerbose := false
 
-	if len(os.Args) == 2 {
+	if len(os.Args) >= 2 {
 		root = string(os.Args[1])
+	}
+	if len(os.Args) >= 3 {
+		verbose = string(os.Args[2])
+	}
+
+	if verbose != "" {
+		optionVerbose = true
 	}
 
 	fmt.Println("Git full checker!")
@@ -107,8 +123,10 @@ func main() {
 	}
 
 	for _, file := range files {
-		fmt.Println("At : " + file)
-		AddToChecker(file, &cSum)
+		if optionVerbose {
+			fmt.Println("At : " + file)
+		}
+		AddToChecker(file, &cSum, optionVerbose)
 	}
 	Summary(&cSum)
 }
