@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/gookit/color"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"shell_color"
 	"strconv"
 	"strings"
 )
@@ -23,10 +23,11 @@ type summary struct {
 func Summary(cSum *summary) {
 
 	fmt.Println("Summary: (over the " + strconv.Itoa(cSum.countGits) + " repositories)")
-	color.Green.Println("\tUpdated " + strconv.Itoa(cSum.countUpdated) + "/" + strconv.Itoa(cSum.countGits))
-	color.Cyan.Println("\tUnPushed " + strconv.Itoa(cSum.countUnpushed) + "/" + strconv.Itoa(cSum.countGits))
-	color.Red.Println("\tChanges not committed " + strconv.Itoa(cSum.countChanges) + "/" + strconv.Itoa(cSum.countGits))
-	color.Yellow.Println("\tUntracked files " + strconv.Itoa(cSum.countUntracked) + "/" + strconv.Itoa(cSum.countGits))
+	shell_color.GreenPrintln("\tUpdated " + strconv.Itoa(cSum.countUpdated) + "/" + strconv.Itoa(cSum.countGits))
+	shell_color.CyanPrintln("\tUnPushed " + strconv.Itoa(cSum.countUnpushed) + "/" + strconv.Itoa(cSum.countGits))
+	shell_color.RedPrintln("\tChanges not committed " + strconv.Itoa(cSum.countChanges) + "/" + strconv.Itoa(cSum.countGits))
+	shell_color.YellowPrintln("\tUntracked files " + strconv.Itoa(cSum.countUntracked) + "/" + strconv.Itoa(cSum.countGits))
+	shell_color.BluePrintln("\t\t\t\tusing Colors!")
 }
 
 func AddToChecker(path string, cSum *summary) {
@@ -42,22 +43,22 @@ func AddToChecker(path string, cSum *summary) {
 
 	st := string(out)
 	if strings.Contains(st, "Your branch is up to date with") {
-		color.Green.Println("\t\t* Local changes updated with remotes")
+		shell_color.GreenPrintln("\t\t* Local changes updated with remotes")
 		// color.New(color.FgWhite).Println("\t\t* Local changes updated with remotes")
 		cSum.countUpdated++
 	}
 	if strings.Contains(st, "Your branch is ahead of") {
-		color.Cyan.Println("\t\t* Unpushed commits")
+		shell_color.CyanPrintln("\t\t* Unpushed commits")
 		// color.New(color.FgCyan).Println("\t\t* Unpushed commits")
 		cSum.countUnpushed++
 	}
 	if strings.Contains(st, "Changes not staged for commit") {
-		color.Red.Println("\t\t* Has changes not staged for commit")
+		shell_color.RedPrintln("\t\t* Has changes not staged for commit")
 		// color.New(color.FgRed).Println("\t\t* Has changes not staged for commit")
 		cSum.countChanges++
 	}
 	if strings.Contains(st, "Untracked files:") {
-		color.Yellow.Println("\t\t* Has untracked files")
+		shell_color.YellowPrintln("\t\t* Has untracked files")
 		// color.New(color.FgYellow).Println("\t\t* Has untracked files")
 		cSum.countUntracked++
 	}
