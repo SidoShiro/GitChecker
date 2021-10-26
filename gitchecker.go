@@ -152,8 +152,6 @@ func main() {
 		os.Exit(0)
 	}
 
-	fmt.Printf("textPtr: %s, metricPtr: %t, uniquePtr: %t\n", *rootPtr, *verbosePtr, *helpPtr)
-
 	// root := "/home/sido/Projects/"
 	// Current directory by default
 	root := *rootPtr
