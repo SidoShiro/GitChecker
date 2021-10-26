@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -135,21 +136,27 @@ func GetDirWalk(root string) ([]string, error) {
 }
 
 func main() {
+	rootPtr := flag.String("root", ".", "Folder, current directory by default (Required)")
+	verbosePtr := flag.Bool("verbose", false, "Show detailed information")
+	helpPtr := flag.Bool("help", false, "Show this help.")
+	flag.Parse()
+
+	if *rootPtr == "" {
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
+
+	if *helpPtr == true {
+		flag.PrintDefaults()
+		os.Exit(0)
+	}
+
+	fmt.Printf("textPtr: %s, metricPtr: %t, uniquePtr: %t\n", *rootPtr, *verbosePtr, *helpPtr)
+
 	// root := "/home/sido/Projects/"
-	root := "." // Current directory by default
-	verbose := ""
-	optionVerbose := false
-
-	if len(os.Args) >= 2 {
-		root = string(os.Args[1])
-	}
-	if len(os.Args) >= 3 {
-		verbose = string(os.Args[2])
-	}
-
-	if verbose != "" {
-		optionVerbose = true
-	}
+	// Current directory by default
+	root := *rootPtr
+	optionVerbose := *verbosePtr
 
 	fmt.Println("Git full checker!")
 
