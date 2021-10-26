@@ -124,7 +124,8 @@ func GetDirWalk(root string) ([]string, error) {
 			}
 
 			for _, f := range filesInDir {
-				if f.Name() == ".git" {
+				// Search for an .git as Dir
+				if f.Name() == ".git" && f.IsDir() {
 					files = append(files, path)
 					break
 				}
